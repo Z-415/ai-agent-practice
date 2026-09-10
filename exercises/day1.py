@@ -31,7 +31,7 @@ is_student = True    # TODO: 改成 True 或 False
 # 补：用 f-string 拼出一句话，里面要包含上面 4 个变量的值
 # 提示：f"我叫{name}，今年{age}岁"
 
-intro = f"我是{name},今年{age}岁"        # TODO
+intro = f"我是{name},今年{age}岁,体重{height}公斤，我是一名学生是{is_student}"        # TODO
 
 
 # ----------------------------------------------------------------------
@@ -40,8 +40,8 @@ intro = f"我是{name},今年{age}岁"        # TODO
 # 补：算出 17 除以 5 的「整数商」和「余数」
 # 提示：// 是整除，% 是取余
 
-quotient = 17//5      # TODO
-remainder = 17%5     # TODO
+quotient = 17 // 5      # TODO
+remainder = 17 % 5     # TODO
 
 
 # ----------------------------------------------------------------------
@@ -55,11 +55,11 @@ remainder = 17%5     # TODO
 # 提示：注意判断顺序，从大到小写
 
 def grade(score):
-    if score>=90:
+    if score >= 90:
         return "A"
-    elif score>=80:
+    elif score >= 80:
         return "B"
-    elif score>=60:
+    elif score >= 60:
         return "C"
     else:
         return "D"
@@ -92,11 +92,11 @@ for i in range(1, 101):
 def fizzbuzz(n):
     result = []
     for i in range(1,n+1):
-        if i%3==0 and i%5==0:
+        if i % 3 == 0 and i % 5 == 0:
             result.append("FizzBuzz")
-        elif i%5==0:
+        elif i % 5 == 0:
             result.append("Buzz")
-        elif i%3==0:
+        elif i % 3 == 0:
             result.append("Fizz")
         else:
             result.append(i)

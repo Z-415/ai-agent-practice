@@ -1,0 +1,29 @@
+{
+  "// 说明": "练习区专用设置：关掉 AI 内联补全，避免'手没动、脑也没动'。只对本文件夹生效，你其他项目不受影响。",
+
+  "// 核心开关": "editor.inlineSuggest.enabled 是无视插件来源的总开关（Copilot / 通义灵码 / CodeGeeX / Continue 都听它的）",
+  "editor.inlineSuggest.enabled": false,
+
+  "// GitHub Copilot": "如果你装了 Copilot，这两个也一起关掉",
+  "github.copilot.enable": {
+    "*": false
+  },
+  "github.copilot.inlineSuggest.enable": false,
+
+  "// 其他常见 AI 补全插件": "如果下面这几个你装了，也会一起被关掉",
+  "continue.enableTabAutocomplete": false,
+  "codegeex.enable": false,
+  "codegeex.enableInlineCompletion": false,
+
+  "// 保留普通补全": "普通 IntelliSense（变量名、函数签名提示，不是 AI 生成的）继续开，那些是无害的、也是该用的",
+  "editor.quickSuggestions": {
+    "other": true,
+    "comments": true,
+    "strings": true
+  },
+  "editor.tabCompletion": "off",
+  "editor.acceptSuggestionOnEnter": "off",
+
+  "// 保存时自动格式化": "装了 Ruff 或 Black 之后，运算符空格这类问题会自动修好",
+  "editor.formatOnSave": true
+}
