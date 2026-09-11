@@ -165,6 +165,24 @@ def safe_read(path):
 #      下划线开头的名字表示"内部的，外部别直接改"。
 
 class Conversation:
+    def __init__(self,system_prompt):
+        self._messages = [
+            {"role":"system","content":system_prompt}
+        ]
+
+    def add_user(self,text):
+        self._messages.append({"role":"user","content":text})
+
+    def add_assistant(self,text):
+        self._messages.append({"role":"assistant","content":text})
+
+    @property
+    def messages(self):
+        return self._messages
+
+    def __len__(self):
+        return len(self._messages)
+    
     # TODO
     pass
 
@@ -187,7 +205,17 @@ class Conversation:
 #   -> {"total_words": 7, "top": [["the", 3], ["cat", 2]]}
 
 def analyze_file(path, k=5):
-    # TODO
+    try:
+        with open(path,"r",encoding="utf-8")as f:
+            text = f.read()
+            if not text:
+               return {"total_words":0,"top":[]} 
+        ranked = top_words(text,k)
+        words = text.lower().split()
+        dic = {"total_words":len(words),"top":[list(item)for item in ranked]}
+        return dic
+    except FileNotFoundError:
+        return {"total_words":0,"top":[]}
     pass
 
 
