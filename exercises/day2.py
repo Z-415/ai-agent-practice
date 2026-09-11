@@ -45,7 +45,17 @@ from typing import List
 #   -> [("the", 3), ("cat", 2), ("bird", 1)]
 
 def top_words(text, k=3):
-    # TODO
+    words = text.lower().split()
+    counts ={}
+    #for w in words:
+    #    if w in counts:
+    #        counts[w]+=1
+    #    else:
+    #        count[w] = 1
+    for w in words:
+        counts[w] = counts.get(w,0) + 1
+    ranked = sorted(counts.items(),key=lambda kv:(-kv[1],kv[0]))
+    return ranked[:k]# TODO
     pass
 
 
