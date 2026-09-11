@@ -81,12 +81,17 @@ def top_words(text, k=3):
 #   load_json("不存在.json")      -> None
 
 def save_json(path, data):
-    # TODO
+    with open(path,"w",encoding="utf-8") as f:
+        json.dump(data,f,ensure_ascii=False,indent=2)# TODO
     pass
 
 
 def load_json(path):
-    # TODO
+    try:
+        with open(path,"r",encoding="utf-8") as f:
+            return json.load(f)
+    except(FileNotFoundError,json.JSONDecodeError):
+        return None# TODO
     pass
 
 
