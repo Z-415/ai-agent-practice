@@ -257,7 +257,15 @@ class Solution:
     #     注意：力扣上 n 上限只有 10^4，暴力解**其实也能过** ——
     #     别把因果关系搞反了（不是"超时才优化"，是"面试要问才优化"）。
     def twoSum(self, nums: List[int], target: int) -> List[int]:
-        # TODO
+        seen = {}
+        for i in range(len(nums)):
+            num = nums[i]
+            complement = target - num
+            if complement in seen:
+                return [seen[complement],i]
+            seen[num] = i
+        return []
+                # TODO
         pass
 
     # ------------------------------------------------------------------
