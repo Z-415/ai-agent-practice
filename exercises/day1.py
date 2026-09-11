@@ -19,10 +19,10 @@
 # 补：定义 4 个变量，分别是你的名字(str)、年龄(int)、身高(float)、是否在读(bool)
 # 提示：字符串要用引号包起来，比如 "张三"
 
-name = "张三"          # TODO: 改成字符串
-age = 20        # TODO: 改成整数
-height = 65.5        # TODO: 改成小数，比如 1.75
-is_student = True    # TODO: 改成 True 或 False
+name = "张三"  # TODO: 改成字符串
+age = 20  # TODO: 改成整数
+height = 65.5  # TODO: 改成小数，比如 1.75
+is_student = True  # TODO: 改成 True 或 False
 
 
 # ----------------------------------------------------------------------
@@ -31,7 +31,7 @@ is_student = True    # TODO: 改成 True 或 False
 # 补：用 f-string 拼出一句话，里面要包含上面 4 个变量的值
 # 提示：f"我叫{name}，今年{age}岁"
 
-intro = f"我是{name},今年{age}岁,体重{height}公斤，我是一名学生是{is_student}"        # TODO
+intro = f"我是{name},今年{age}岁,体重{height}公斤，我是一名学生是{is_student}"  # TODO
 
 
 # ----------------------------------------------------------------------
@@ -40,8 +40,8 @@ intro = f"我是{name},今年{age}岁,体重{height}公斤，我是一名学生�
 # 补：算出 17 除以 5 的「整数商」和「余数」
 # 提示：// 是整除，% 是取余
 
-quotient = 17 // 5      # TODO
-remainder = 17 % 5     # TODO
+quotient = 17 // 5  # TODO
+remainder = 17 % 5  # TODO
 
 
 # ----------------------------------------------------------------------
@@ -53,6 +53,7 @@ remainder = 17 % 5     # TODO
 #     60 到 79   -> "C"
 #     60 以下    -> "D"
 # 提示：注意判断顺序，从大到小写
+
 
 def grade(score):
     if score >= 90:
@@ -71,10 +72,10 @@ def grade(score):
 # 补：求和 1 + 2 + 3 + ... + 100，结果放进 total
 # 提示：先 total = 0，再 for i in range(1, 101): total += i
 
-total = 0;
+total = 0
 for i in range(1, 101):
     total += i
-        # TODO
+    # TODO
 
 
 # ----------------------------------------------------------------------
@@ -89,9 +90,10 @@ for i in range(1, 101):
 #     fizzbuzz(15)[14]  ->  "FizzBuzz"
 # 提示：要先把"同时是 3 和 5 的倍数"判断放在最前面，否则会被前面的条件抢先命中
 
+
 def fizzbuzz(n):
     result = []
-    for i in range(1,n+1):
+    for i in range(1, n + 1):
         if i % 3 == 0 and i % 5 == 0:
             result.append("FizzBuzz")
         elif i % 5 == 0:
@@ -101,8 +103,7 @@ def fizzbuzz(n):
         else:
             result.append(i)
     return result
-        # TODO
-    pass
+    # TODO
 
 
 # ======================================================================
@@ -134,8 +135,7 @@ def _check():
         errors.append("练习3：17 %% 5 应该是 2，你得到 %r" % (remainder,))
 
     # --- 练习 4 ---
-    cases = [(95, "A"), (90, "A"), (85, "B"), (80, "B"),
-             (70, "C"), (60, "C"), (59, "D"), (0, "D")]
+    cases = [(95, "A"), (90, "A"), (85, "B"), (80, "B"), (70, "C"), (60, "C"), (59, "D"), (0, "D")]
     for score, expect in cases:
         try:
             got = grade(score)
@@ -143,8 +143,7 @@ def _check():
             errors.append("练习4：grade(%d) 报错了 -> %s" % (score, e))
             break
         if got != expect:
-            errors.append("练习4：grade(%d) 应该返回 %s，你返回 %r"
-                          % (score, expect, got))
+            errors.append("练习4：grade(%d) 应该返回 %s，你返回 %r" % (score, expect, got))
 
     # --- 练习 5 ---
     if total != 5050:
@@ -153,8 +152,9 @@ def _check():
     # --- 练习 6 ---
     try:
         if fizzbuzz(5) != [1, 2, "Fizz", 4, "Buzz"]:
-            errors.append("练习6：fizzbuzz(5) 应该返回 [1, 2, 'Fizz', 4, 'Buzz']，"
-                          "你返回 %r" % (fizzbuzz(5),))
+            errors.append(
+                "练习6：fizzbuzz(5) 应该返回 [1, 2, 'Fizz', 4, 'Buzz']，你返回 %r" % (fizzbuzz(5),)
+            )
         elif fizzbuzz(15)[14] != "FizzBuzz":
             errors.append("练习6：fizzbuzz(15) 的第 15 个元素应该是 'FizzBuzz'")
     except Exception as e:
@@ -174,7 +174,7 @@ def _check():
         print("")
         print("接下来做最后一件事（第一次 Git 提交）：")
         print("  git init")
-        print('  git add .')
+        print("  git add .")
         print('  git commit -m "day1: python 语法练习"')
         print("  git log --oneline")
 

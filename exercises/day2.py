@@ -21,7 +21,6 @@
 
 import json
 import sys
-from typing import List
 
 # ======================================================================
 # 练习 1：字典 + 排序（词频统计）
@@ -44,19 +43,19 @@ from typing import List
 #   top_words("the cat the dog the bird cat", 3)
 #   -> [("the", 3), ("cat", 2), ("bird", 1)]
 
+
 def top_words(text, k=3):
     words = text.lower().split()
-    counts ={}
-    #for w in words:
+    counts = {}
+    # for w in words:
     #    if w in counts:
     #        counts[w]+=1
     #    else:
     #        count[w] = 1
     for w in words:
-        counts[w] = counts.get(w,0) + 1
-    ranked = sorted(counts.items(),key=lambda kv:(-kv[1],kv[0]))
-    return ranked[:k]# TODO
-    pass
+        counts[w] = counts.get(w, 0) + 1
+    ranked = sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))
+    return ranked[:k]  # TODO
 
 
 # ======================================================================
@@ -80,19 +79,18 @@ def top_words(text, k=3):
 #   load_json("t.json")          -> {"name": "张三", "score": 90}
 #   load_json("不存在.json")      -> None
 
+
 def save_json(path, data):
-    with open(path,"w",encoding="utf-8") as f:
-        json.dump(data,f,ensure_ascii=False,indent=2)# TODO
-    pass
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)  # TODO
 
 
 def load_json(path):
     try:
-        with open(path,"r",encoding="utf-8") as f:
+        with open(path, "r", encoding="utf-8") as f:
             return json.load(f)
-    except(FileNotFoundError,json.JSONDecodeError):
-        return None# TODO
-    pass
+    except (FileNotFoundError, json.JSONDecodeError):
+        return None  # TODO
 
 
 # ======================================================================
@@ -113,14 +111,14 @@ def load_json(path):
 # 为什么要练这个：Agent 会去读用户给的各种文件，
 # 用户给什么烂文件都有可能，你的程序不能因此挂掉。
 
+
 def safe_read(path):
     try:
-        with open(path,"r",encoding="utf-8")as f:
+        with open(path, "r", encoding="utf-8") as f:
             return f.read()
-    except (OSError,UnicodeDecodeError):
+    except (OSError, UnicodeDecodeError):
         return ""
     # TODO
-    pass
 
 
 # ======================================================================
@@ -164,17 +162,16 @@ def safe_read(path):
 # 提示：self 就是"这个对象自己"，self._messages 是对象自己的属性。
 #      下划线开头的名字表示"内部的，外部别直接改"。
 
+
 class Conversation:
-    def __init__(self,system_prompt):
-        self._messages = [
-            {"role":"system","content":system_prompt}
-        ]
+    def __init__(self, system_prompt):
+        self._messages = [{"role": "system", "content": system_prompt}]
 
-    def add_user(self,text):
-        self._messages.append({"role":"user","content":text})
+    def add_user(self, text):
+        self._messages.append({"role": "user", "content": text})
 
-    def add_assistant(self,text):
-        self._messages.append({"role":"assistant","content":text})
+    def add_assistant(self, text):
+        self._messages.append({"role": "assistant", "content": text})
 
     @property
     def messages(self):
@@ -182,9 +179,8 @@ class Conversation:
 
     def __len__(self):
         return len(self._messages)
-    
+
     # TODO
-    pass
 
 
 # ======================================================================
@@ -204,19 +200,14 @@ class Conversation:
 #   analyze_file("a.txt", 2)
 #   -> {"total_words": 7, "top": [["the", 3], ["cat", 2]]}
 
+
 def analyze_file(path, k=5):
-    try:
-        with open(path,"r",encoding="utf-8")as f:
-            text = f.read()
-            if not text:
-               return {"total_words":0,"top":[]} 
-        ranked = top_words(text,k)
-        words = text.lower().split()
-        dic = {"total_words":len(words),"top":[list(item)for item in ranked]}
-        return dic
-    except FileNotFoundError:
-        return {"total_words":0,"top":[]}
-    pass
+    text = safe_read(path)
+    if not text:
+        return {"total_words": 0, "top": []}
+    ranked = top_words(text, k)
+    words = text.lower().split()
+    return {"total_words": len(words), "top": [list(item) for item in ranked]}
 
 
 # ======================================================================
@@ -234,6 +225,7 @@ def analyze_file(path, k=5):
 #   本地测试是我写的（覆盖容易漏的边界），官网测试是官方的（真判分）。
 #   两个都过，才算真会。
 # ======================================================================
+
 
 class Solution:
     # ------------------------------------------------------------------
@@ -256,17 +248,16 @@ class Solution:
     #     在你以后写 Agent 项目时天天要用。
     #     注意：力扣上 n 上限只有 10^4，暴力解**其实也能过** ——
     #     别把因果关系搞反了（不是"超时才优化"，是"面试要问才优化"）。
-    def twoSum(self, nums: List[int], target: int) -> List[int]:
+    def twoSum(self, nums: list[int], target: int) -> list[int]:
         seen = {}
         for i in range(len(nums)):
             num = nums[i]
             complement = target - num
             if complement in seen:
-                return [seen[complement],i]
+                return [seen[complement], i]
             seen[num] = i
         return []
-                # TODO
-        pass
+        # TODO
 
     # ------------------------------------------------------------------
     # 【LC 9】回文数                       难度：简单
@@ -290,13 +281,12 @@ class Solution:
         y = 0
         original = x
         while x > 0:
-            digit = x%10
-            y = digit + y*10
+            digit = x % 10
+            y = digit + y * 10
             x = x // 10
         return original == y
 
         # TODO
-        pass
 
 
 # 自测区：不要修改下面的代码
@@ -323,8 +313,10 @@ def _check():
     try:
         got = top_words("B a b a b A b", 2)
         if [tuple(x) for x in (got or [])] != [("b", 4), ("a", 3)]:
-            note("练习1：大小写没统一？top_words('B a b a b A b', 2) 应该是 "
-                 "[('b', 4), ('a', 3)]，你返回 %r" % (got,))
+            note(
+                "练习1：大小写没统一？top_words('B a b a b A b', 2) 应该是 "
+                "[('b', 4), ('a', 3)]，你返回 %r" % (got,)
+            )
     except Exception as e:
         note("练习1（大小写）：报错了 -> %s: %s" % (type(e).__name__, e))
 
@@ -374,11 +366,9 @@ def _check():
         try:
             r = safe_read(bad_path)
             if r != "":
-                note("练习3：safe_read(%r) 失败时应该返回空字符串，你返回 %r"
-                     % (bad_path, r))
+                note("练习3：safe_read(%r) 失败时应该返回空字符串，你返回 %r" % (bad_path, r))
         except Exception as e:
-            note("练习3：safe_read(%r) 崩了 -> %s: %s"
-                 % (bad_path, type(e).__name__, e))
+            note("练习3：safe_read(%r) 崩了 -> %s: %s" % (bad_path, type(e).__name__, e))
 
     # ---------- 练习 4 ----------
     try:
@@ -393,8 +383,10 @@ def _check():
             {"role": "user", "content": "1+1 等于几"},
         ]
         if list(c.messages) != want:
-            note("练习4：messages 内容不对。\n        期望 %r\n        实际 %r"
-                 % (want, list(c.messages)))
+            note(
+                "练习4：messages 内容不对。\n        期望 %r\n        实际 %r"
+                % (want, list(c.messages))
+            )
         if len(c) != 4:
             note("练习4：len(c) 应该是 4（含 system），你返回 %r" % (len(c),))
     except Exception as e:
@@ -419,8 +411,7 @@ def _check():
     try:
         got = analyze_file(os.path.join(tmp, "不存在.txt"), 3)
         if got != {"total_words": 0, "top": []}:
-            note("练习5：读不到文件时应该返回 {'total_words': 0, 'top': []}，"
-                 "你返回 %r" % (got,))
+            note("练习5：读不到文件时应该返回 {'total_words': 0, 'top': []}，你返回 %r" % (got,))
     except Exception as e:
         note("练习5：读不到文件时崩了 -> %s: %s" % (type(e).__name__, e))
 
@@ -441,16 +432,17 @@ def _check_algo():
     lc1_cases = [
         ([2, 7, 11, 15], 9, [0, 1]),
         ([3, 2, 4], 6, [1, 2]),
-        ([3, 3], 6, [0, 1]),        # 同一个值出现两次，不能返回同一个下标
-        ([1, 2], 3, [0, 1]),        # 最短情况
+        ([3, 3], 6, [0, 1]),  # 同一个值出现两次，不能返回同一个下标
+        ([1, 2], 3, [0, 1]),  # 最短情况
     ]
     lc1_ok = True
     for nums, target, want in lc1_cases:
         try:
             got = sol.twoSum(list(nums), target)
         except Exception as e:
-            errors.append("LC1：twoSum(%r, %d) 报错 -> %s: %s"
-                          % (nums, target, type(e).__name__, e))
+            errors.append(
+                "LC1：twoSum(%r, %d) 报错 -> %s: %s" % (nums, target, type(e).__name__, e)
+            )
             lc1_ok = False
             break
         if got is None:
@@ -465,8 +457,10 @@ def _check_algo():
             and nums[got[0]] + nums[got[1]] == target
         )
         if not good:
-            errors.append("LC1：twoSum(%r, %d) 应该返回 %r（顺序无所谓），你返回 %r"
-                          % (nums, target, want, got))
+            errors.append(
+                "LC1：twoSum(%r, %d) 应该返回 %r（顺序无所谓），你返回 %r"
+                % (nums, target, want, got)
+            )
             lc1_ok = False
 
     # 关于性能：这里**不判超时**，只提供一个可选的对照实验
@@ -490,7 +484,7 @@ def _check_algo():
 
         for n in (10000, 20000):
             big = list(range(n))
-            tgt = (n - 2) + (n - 1)      # 答案在最末尾，逼暴力解跑满
+            tgt = (n - 2) + (n - 1)  # 答案在最末尾，逼暴力解跑满
             t0 = time.perf_counter()
             _brute(big, tgt)
             t_b = time.perf_counter() - t0
@@ -501,26 +495,30 @@ def _check_algo():
 
         print("")
         print("    看清楚：n 翻一倍，暴力解慢 4 倍（O(n^2)），你的解法几乎不变。")
-        print("    10^4 时暴力还能过，10^9 时会直接挂掉 —— 这就是\"复杂度\"的意思。")
+        print('    10^4 时暴力还能过，10^9 时会直接挂掉 —— 这就是"复杂度"的意思。')
 
     # ---------- LC 9 回文数 ----------
     lc9_cases = [
-        (121, True), (-121, False), (10, False), (0, True),
-        (11, True), (12321, True), (1000021, False), (12345, False),
+        (121, True),
+        (-121, False),
+        (10, False),
+        (0, True),
+        (11, True),
+        (12321, True),
+        (1000021, False),
+        (12345, False),
     ]
     for x, want in lc9_cases:
         try:
             got = sol.isPalindrome(x)
         except Exception as e:
-            errors.append("LC9：isPalindrome(%d) 报错 -> %s: %s"
-                          % (x, type(e).__name__, e))
+            errors.append("LC9：isPalindrome(%d) 报错 -> %s: %s" % (x, type(e).__name__, e))
             break
         if got is None:
             errors.append("LC9：isPalindrome(%d) 返回 None，还没写吧" % x)
             break
         if bool(got) != want:
-            errors.append("LC9：isPalindrome(%d) 应该是 %s，你返回 %r"
-                          % (x, want, got))
+            errors.append("LC9：isPalindrome(%d) 应该是 %s，你返回 %r" % (x, want, got))
 
     return errors
 
@@ -566,7 +564,7 @@ def _run_all():
         print("  LC 9  回文数     https://leetcode.cn/problems/palindrome-number/")
         print("")
         print("官网也绿了，再提交代码：")
-        print('  git add .')
+        print("  git add .")
         print('  git commit -m "day2: dict/json/异常/类 + LC1/LC9"')
 
 

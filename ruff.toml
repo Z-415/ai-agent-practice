@@ -1,0 +1,49 @@
+# Ruff 配置（初学者项目用的「降噪」版）
+#
+# ── 为什么需要这个文件 ──────────────────────────────────────────────
+# Ruff 0.16 的默认规则集很宽。在 day2.py 上它报了 63 条问题，
+# 但其中 52 条来自「自测区」的脚手架代码（我写的），
+# 真正属于学习者写的只有 8 条。
+#
+# 报警太多 = 你会学会「无视波浪线」= 最坏的结果。
+# 所以这里只留「该看的」，其余关掉。
+#
+# ── 怎么用 ────────────────────────────────────────────────────────
+#   python -m ruff check exercises/day2.py          # 只看
+#   python -m ruff check --fix exercises/day2.py    # 自动修可修的
+#
+# VS Code 里的 Ruff 扩展会自动读这份配置，不用额外设置。
+
+line-length = 100
+target-version = "py313"
+exclude = [".git", ".vscode", "__pycache__"]
+
+[lint]
+# E1           : 缩进规范
+# （注释、逗号、运算符的空格问题不在这里管 —— 那不是「错误」，
+#   交给下面的 ruff format 自动格式化，见文件末尾）
+# E4 / E7 / E9 : pycodestyle 的真实错误（缩进、语法类）
+# F            : pyflakes（未定义变量、未使用的导入 —— 这两类会真出 bug）
+# PIE790       : return 后面多余的 pass（学习者的高频坏习惯）
+# W291 / W293  : 行尾多余空格 / 空白行
+select = ["E1", "E4", "E7", "E9", "F", "PIE790", "W291", "W293"]
+
+# ── 下面这些「默认开着但我关掉」的规则，以及为什么 ──────────────────
+# UP031  printf-string-formatting : 自测区故意用 % 格式化（那是脚手架，不是学习材料）
+# BLE001 blind-except             : 自测区故意用 except Exception（测试代码就该兜住一切）
+# FURB105 print-empty-string      : 自测区有 10 处 print("")，纯属噪音
+# S110   try-except-pass          : 同上
+ignore = ["UP031", "BLE001", "FURB105", "S110"]
+
+# ── 格式化器（比 linter 更适合治「空格」）────────────────────────────
+# linter 是「挑错」，formatter 是「自动排版」。
+# 「逗号后不加空格」「运算符两边不加空格」这种事，不该靠意志力改，
+# 应该让工具在保存时自动排好 —— 这是真实开发里的做法。
+#
+#   python -m ruff format .          # 立刻格式化整个项目
+#   python -m ruff format --diff .   # 只看会改什么，不实际改
+#
+# VS Code 已配好「保存时自动格式化」（见 .vscode/settings.json）。
+[format]
+quote-style = "double"
+indent-style = "space"
