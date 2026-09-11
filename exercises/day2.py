@@ -285,6 +285,16 @@ class Solution:
     #     第二版（官网原题的"进阶"要求）：**不转字符串**，
     #             只用取余 % 和整除 // 把数字一位一位拆出来反转。
     def isPalindrome(self, x: int) -> bool:
+        if x < 0:
+            return False
+        y = 0
+        original = x
+        while x > 0:
+            digit = x%10
+            y = digit + y*10
+            x = x // 10
+        return original == y
+
         # TODO
         pass
 
