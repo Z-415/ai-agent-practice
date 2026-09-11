@@ -114,6 +114,11 @@ def load_json(path):
 # 用户给什么烂文件都有可能，你的程序不能因此挂掉。
 
 def safe_read(path):
+    try:
+        with open(path,"r",encoding="utf-8")as f:
+            return f.read()
+    except (OSError,UnicodeDecodeError):
+        return ""
     # TODO
     pass
 
