@@ -301,6 +301,12 @@ class Solution:
     #
     # 提示：可以先把最短的那个字符串找出来当基准，能省掉边界判断。
     def longestCommonPrefix(self, strs: list[str]) -> str:
+        base = min(strs,key=len)
+        for i in range(len(base)):
+            for s in strs:
+                if s[i] != base[i]:
+                    return base[:i]
+        return base
         # TODO
         pass
 
