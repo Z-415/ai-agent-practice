@@ -60,7 +60,10 @@ from pathlib import Path  # noqa: F401
 #     -> {"role": "user", "content": "你好", "name": "小明"}
 
 def build_message(role: str, content: str, name: str | None = None) -> dict:
-    # TODO
+    message = {"role":role,"content":content}
+    if name is not None:
+        message["name"] = name 
+    return message # TODO
     pass
 
 
@@ -90,11 +93,15 @@ def build_message(role: str, content: str, name: str | None = None) -> dict:
 #    同一份代码在你电脑和服务器上跑出来差 8 小时。
 
 def humanize_ts(ts: int) -> str:
-    # TODO
+    dt = datetime.fromtimestamp(ts,tz=timezone.utc)
+    return dt.strftime("%Y-%m-%d %H:%M:%S")# TODO
     pass
 
 
 def ts_after(ts: int, days: int) -> int:
+    dt = datetime.fromtimestamp(ts,tz = timezone.utc)
+    after_dt = dt + timedelta( days= days)
+    return int(after_dt.timestamp())
     # TODO
     pass
 
