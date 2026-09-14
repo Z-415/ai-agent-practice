@@ -135,6 +135,14 @@ def ts_after(ts: int, days: int) -> int:
 #   list_files(那个目录, ".json") -> ["data.json"]
 
 def list_files(dirpath: str, suffix: str = ".md") -> list[str]:
+    p = Path(dirpath)
+    if not p.is_dir():
+        return []
+    names = []
+    for child in p.iterdir():
+        if child.is_file() and child.name.endswith(suffix):
+            names.append(child.name)
+    return sorted(names)
     # TODO
     pass
 
