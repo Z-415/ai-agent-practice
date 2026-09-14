@@ -62,8 +62,11 @@ from pathlib import Path  # noqa: F401
 #   -> Namespace(input='a.txt', top=3, verbose=True)
 
 def build_parser() -> argparse.ArgumentParser:
-    # TODO
-    pass
+    parser = argparse.ArgumentParser(description="词频统计工具")
+    parser.add_argument("-i","--input", required=True, help="输入文件路径")
+    parser.add_argument("-k", "--top", type = int, default= 5, help="取前几个(默认5)")
+    parser.add_argument("-v","--verbose", action = "store_true", help="输出详细日志")
+    return parser
 
 
 # ======================================================================
