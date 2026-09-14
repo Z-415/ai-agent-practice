@@ -182,9 +182,17 @@ def count_words(path: str, top: int = 5) -> dict:
 #   main(["-i", "不存在.txt"]) -> 1
 
 def main(argv: list[str] | None = None) -> int:
-    # TODO
-    pass
-
+    parser = build_parser()
+    args = parser.parse_args(argv)
+    logger = setup_logger(args.verbose)
+    logger.debug("解析到的参数：%s",args)
+    report = count_words(args.input,args.top)
+    if report["total"] == 0:
+        logger.error("读不到文件或文件是空的：%s",args.input)
+        return 1
+    for word, count in report["top"]:
+        print(f"{word}\t{count}")
+    return 0
 
 # ======================================================================
 # 今日算法（LeetCode）
