@@ -191,7 +191,10 @@ def list_files(dirpath: str, suffix: str = ".md") -> list[str]:
 #   -> None
 
 def extract_code_block(text: str, lang: str = "json") -> str | None:
-    # TODO
+    match = re.search(r"```"+ lang + r"\s*(.*?)\s*```",text,re.DOTALL)
+    if match is None:
+        return None
+    return match.group(1).strip()# TODO
     pass
 
 
