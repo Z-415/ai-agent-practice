@@ -59,12 +59,12 @@ from pathlib import Path  # noqa: F401
 #     build_message("user", "你好", name="小明")
 #     -> {"role": "user", "content": "你好", "name": "小明"}
 
+
 def build_message(role: str, content: str, name: str | None = None) -> dict:
-    message = {"role":role,"content":content}
+    message = {"role": role, "content": content}
     if name is not None:
-        message["name"] = name 
-    return message # TODO
-    pass
+        message["name"] = name
+    return message
 
 
 # ======================================================================
@@ -92,18 +92,16 @@ def build_message(role: str, content: str, name: str | None = None) -> dict:
 # ⚠️ 常见坑：不写 tz=timezone.utc，拿到的是**本机时区**的时间，
 #    同一份代码在你电脑和服务器上跑出来差 8 小时。
 
+
 def humanize_ts(ts: int) -> str:
-    dt = datetime.fromtimestamp(ts,tz=timezone.utc)
-    return dt.strftime("%Y-%m-%d %H:%M:%S")# TODO
-    pass
+    dt = datetime.fromtimestamp(ts, tz=timezone.utc)
+    return dt.strftime("%Y-%m-%d %H:%M:%S")
 
 
 def ts_after(ts: int, days: int) -> int:
-    dt = datetime.fromtimestamp(ts,tz = timezone.utc)
-    after_dt = dt + timedelta( days= days)
+    dt = datetime.fromtimestamp(ts, tz=timezone.utc)
+    after_dt = dt + timedelta(days=days)
     return int(after_dt.timestamp())
-    # TODO
-    pass
 
 
 # ======================================================================
@@ -134,6 +132,7 @@ def ts_after(ts: int, days: int) -> int:
 #   list_files(那个目录)        -> ["README.md", "notes.md"]
 #   list_files(那个目录, ".json") -> ["data.json"]
 
+
 def list_files(dirpath: str, suffix: str = ".md") -> list[str]:
     p = Path(dirpath)
     if not p.is_dir():
@@ -143,8 +142,6 @@ def list_files(dirpath: str, suffix: str = ".md") -> list[str]:
         if child.is_file() and child.name.endswith(suffix):
             names.append(child.name)
     return sorted(names)
-    # TODO
-    pass
 
 
 # ======================================================================
@@ -190,12 +187,12 @@ def list_files(dirpath: str, suffix: str = ".md") -> list[str]:
 #   extract_code_block("这里没有代码块")
 #   -> None
 
+
 def extract_code_block(text: str, lang: str = "json") -> str | None:
-    match = re.search(r"```"+ lang + r"\s*(.*?)\s*```",text,re.DOTALL)
+    match = re.search(r"```" + lang + r"\s*(.*?)\s*```", text, re.DOTALL | re.IGNORECASE)
     if match is None:
         return None
-    return match.group(1).strip()# TODO
-    pass
+    return match.group(1).strip()
 
 
 # ======================================================================
@@ -223,25 +220,25 @@ def extract_code_block(text: str, lang: str = "json") -> str | None:
 # ⚠️ 这次请**不要重复造轮子**：Day2 你已经因为"没用 safe_read"踩过一次坑了。
 #    读文件那段，想清楚该复用还是该重写。
 
+
 def analyze_log(path: str) -> dict:
     try:
-        with open(path, "r" ,encoding="utf-8") as f:
+        with open(path, "r", encoding="utf-8") as f:
             text = f.read()
         total = 0
         counts = {}
         for line in text.splitlines():
             if not line.strip():
                 continue
-            parts = re.findall(r"\[(\w+)\]",line)
+            parts = re.findall(r"\[(\w+)\]", line)
             if not parts:
-                continue 
+                continue
             level = parts[0]
             total += 1
-            counts[level] = counts.get(level,0)+1
-        return {"total":total, "by_level":counts}
-    except(OSError,UnicodeDecodeError):
-        return {"total": 0, "by_level":{}}# TODO
-    pass
+            counts[level] = counts.get(level, 0) + 1
+        return {"total": total, "by_level": counts}
+    except (OSError, UnicodeDecodeError):
+        return {"total": 0, "by_level": {}}
 
 
 # ======================================================================
@@ -250,6 +247,7 @@ def analyze_log(path: str) -> dict:
 # 流程：在这里写 → 跑本地自测 → 去力扣官网提交 → 官网通过才算完
 # 函数签名和力扣官网一致，可直接粘过去（官网写 List[str]，我用等价的 list[str]）
 # ======================================================================
+
 
 class Solution:
     # ------------------------------------------------------------------
@@ -273,16 +271,15 @@ class Solution:
     #
     # 建议先写第一种 —— 它是通用思路，而且代码短。
     def romanToInt(self, s: str) -> int:
-        values = {"I": 1,"V": 5,"X":10,"L":50,"C":100,"D":500,"M":1000}
+        values = {"I": 1, "V": 5, "X": 10, "L": 50, "C": 100, "D": 500, "M": 1000}
         total = 0
         for i in range(len(s)):
             num = values[s[i]]
-            if i+1 < len(s) and values[s[i]] < values[s[i+1]]:
+            if i + 1 < len(s) and values[s[i]] < values[s[i + 1]]:
                 total -= num
             else:
-                total += num 
-        return total# TODO
-        pass
+                total += num
+        return total
 
     # ------------------------------------------------------------------
     # 【LC 14】最长公共前缀                难度：简单
@@ -301,14 +298,12 @@ class Solution:
     #
     # 提示：可以先把最短的那个字符串找出来当基准，能省掉边界判断。
     def longestCommonPrefix(self, strs: list[str]) -> str:
-        base = min(strs,key=len)
+        base = min(strs, key=len)
         for i in range(len(base)):
             for s in strs:
                 if s[i] != base[i]:
                     return base[:i]
         return base
-        # TODO
-        pass
 
 
 # ======================================================================
@@ -328,15 +323,19 @@ def _check():
     try:
         r1 = build_message("user", "你好")
         if r1 != {"role": "user", "content": "你好"}:
-            note("练习1：build_message('user','你好') 应该是 "
-                 "{'role': 'user', 'content': '你好'}，你返回 %r" % (r1,))
+            note(
+                "练习1：build_message('user','你好') 应该是 "
+                "{'role': 'user', 'content': '你好'}，你返回 %r" % (r1,)
+            )
         r2 = build_message("user", "你好", name="小明")
         if r2 != {"role": "user", "content": "你好", "name": "小明"}:
             note("练习1：带 name 时应该多一个 'name' 键，你返回 %r" % (r2,))
         r3 = build_message("system", "", name="")
         if r3 != {"role": "system", "content": "", "name": ""}:
-            note("练习1：name='' 时也要加上 'name' 键 —— 说明你用了 `if name:` "
-                 "而不是 `if name is not None:`，你返回 %r" % (r3,))
+            note(
+                "练习1：name='' 时也要加上 'name' 键 —— 说明你用了 `if name:` "
+                "而不是 `if name is not None:`，你返回 %r" % (r3,)
+            )
     except Exception as e:
         note("练习1：报错 -> %s: %s" % (type(e).__name__, e))
 
@@ -345,10 +344,12 @@ def _check():
         r = humanize_ts(0)
         if r != "1970-01-01 00:00:00":
             note("练习2：humanize_ts(0) 应该是 '1970-01-01 00:00:00'，你返回 %r" % (r,))
-        r = humanize_ts(1788998400)          # 2026-09-10 00:00:00 UTC
+        r = humanize_ts(1788998400)  # 2026-09-10 00:00:00 UTC
         if r != "2026-09-10 00:00:00":
-            note("练习2：humanize_ts(1788998400) 应该是 '2026-09-10 00:00:00'，"
-                 "你返回 %r（如果差 8 小时，说明忘了 tz=timezone.utc）" % (r,))
+            note(
+                "练习2：humanize_ts(1788998400) 应该是 '2026-09-10 00:00:00'，"
+                "你返回 %r（如果差 8 小时，说明忘了 tz=timezone.utc）" % (r,)
+            )
     except Exception as e:
         note("练习2（humanize_ts）：报错 -> %s: %s" % (type(e).__name__, e))
 
@@ -372,8 +373,10 @@ def _check():
 
         got = list_files(d)
         if got != ["README.md", "notes.md"]:
-            note("练习3：list_files(目录) 应该是 ['README.md', 'notes.md']"
-                 "（不含子目录里的，且要排序），你返回 %r" % (got,))
+            note(
+                "练习3：list_files(目录) 应该是 ['README.md', 'notes.md']"
+                "（不含子目录里的，且要排序），你返回 %r" % (got,)
+            )
         got = list_files(d, ".json")
         if got != ["data.json"]:
             note("练习3：list_files(目录, '.json') 应该是 ['data.json']，你返回 %r" % (got,))
@@ -391,7 +394,7 @@ def _check():
         if got != want:
             note("练习4：应该抽出 %r，你返回 %r" % (want, got))
 
-        t2 = "```json\n{\n  \"a\": 1\n}\n```"
+        t2 = '```json\n{\n  "a": 1\n}\n```'
         got = extract_code_block(t2)
         if got != '{\n  "a": 1\n}':
             note("练习4：多行内容要原样返回（只去掉首尾空白），你返回 %r" % (got,))
@@ -401,11 +404,13 @@ def _check():
             note("练习4：没有代码块时应该返回 None，你返回 %r" % (got,))
 
         # 两个代码块：非贪婪应该只取第一个
-        t3 = "```json\n{\"a\": 1}\n```\n中间的话\n```json\n{\"b\": 2}\n```"
+        t3 = '```json\n{"a": 1}\n```\n中间的话\n```json\n{"b": 2}\n```'
         got = extract_code_block(t3)
         if got != '{"a": 1}':
-            note("练习4：文本里有两个代码块时，应该只取**第一个** → '{\"a\": 1}'，"
-                 "你返回 %r（说明用了贪婪的 .* 而不是非贪婪的 .*?）" % (got,))
+            note(
+                "练习4：文本里有两个代码块时，应该只取**第一个** → '{\"a\": 1}'，"
+                "你返回 %r（说明用了贪婪的 .* 而不是非贪婪的 .*?）" % (got,)
+            )
 
         # 语言不匹配
         got = extract_code_block("```python\nprint(1)\n```", "json")
@@ -418,11 +423,13 @@ def _check():
     try:
         lp = os.path.join(tmp, "app.log")
         with open(lp, "w", encoding="utf-8") as f:
-            f.write("2026-09-10 22:30:00 [INFO] 服务启动\n"
-                    "2026-09-10 22:30:05 [ERROR] 数据库连接失败\n"
-                    "2026-09-10 22:30:07 [INFO] 重试成功\n"
-                    "\n"
-                    "2026-09-10 22:30:09 [WARN] 响应变慢\n")
+            f.write(
+                "2026-09-10 22:30:00 [INFO] 服务启动\n"
+                "2026-09-10 22:30:05 [ERROR] 数据库连接失败\n"
+                "2026-09-10 22:30:07 [INFO] 重试成功\n"
+                "\n"
+                "2026-09-10 22:30:09 [WARN] 响应变慢\n"
+            )
         got = analyze_log(lp)
         want = {"total": 4, "by_level": {"INFO": 2, "ERROR": 1, "WARN": 1}}
         if got != want:
@@ -448,15 +455,24 @@ def _check_algo():
     sol = Solution()
 
     # ---------- LC 13 ----------
-    lc13 = [("III", 3), ("IV", 4), ("IX", 9), ("LVIII", 58),
-            ("MCMXCIV", 1994), ("I", 1), ("MMXXVI", 2026),
-            ("XL", 40), ("XC", 90), ("CD", 400), ("CM", 900)]
+    lc13 = [
+        ("III", 3),
+        ("IV", 4),
+        ("IX", 9),
+        ("LVIII", 58),
+        ("MCMXCIV", 1994),
+        ("I", 1),
+        ("MMXXVI", 2026),
+        ("XL", 40),
+        ("XC", 90),
+        ("CD", 400),
+        ("CM", 900),
+    ]
     for s, want in lc13:
         try:
             got = sol.romanToInt(s)
         except Exception as e:
-            errors.append("LC13：romanToInt(%r) 报错 -> %s: %s"
-                          % (s, type(e).__name__, e))
+            errors.append("LC13：romanToInt(%r) 报错 -> %s: %s" % (s, type(e).__name__, e))
             break
         if got is None:
             errors.append("LC13：romanToInt(%r) 返回 None，还没写吧" % (s,))
@@ -465,26 +481,28 @@ def _check_algo():
             errors.append("LC13：romanToInt(%r) 应该是 %d，你返回 %r" % (s, want, got))
 
     # ---------- LC 14 ----------
-    lc14 = [(["flower", "flow", "flight"], "fl"),
-            (["dog", "racecar", "car"], ""),
-            (["a"], "a"),
-            (["ab", "a"], "a"),
-            (["", "b"], ""),
-            (["abc", "abc", "abc"], "abc"),
-            (["", ""], "")]
+    lc14 = [
+        (["flower", "flow", "flight"], "fl"),
+        (["dog", "racecar", "car"], ""),
+        (["a"], "a"),
+        (["ab", "a"], "a"),
+        (["", "b"], ""),
+        (["abc", "abc", "abc"], "abc"),
+        (["", ""], ""),
+    ]
     for strs, want in lc14:
         try:
             got = sol.longestCommonPrefix(list(strs))
         except Exception as e:
-            errors.append("LC14：longestCommonPrefix(%r) 报错 -> %s: %s"
-                          % (strs, type(e).__name__, e))
+            errors.append(
+                "LC14：longestCommonPrefix(%r) 报错 -> %s: %s" % (strs, type(e).__name__, e)
+            )
             break
         if got is None:
             errors.append("LC14：longestCommonPrefix(%r) 返回 None，还没写吧" % (strs,))
             break
         if got != want:
-            errors.append("LC14：longestCommonPrefix(%r) 应该是 %r，你返回 %r"
-                          % (strs, want, got))
+            errors.append("LC14：longestCommonPrefix(%r) 应该是 %r，你返回 %r" % (strs, want, got))
 
     return errors
 
@@ -529,7 +547,7 @@ def _run_all():
         print("  LC 14 最长公共前缀    https://leetcode.cn/problems/longest-common-prefix/")
         print("")
         print("官网也绿了，再提交代码：")
-        print('  git add .')
+        print("  git add .")
         print('  git commit -m "day3: venv/datetime/pathlib/正则 + LC13/LC14"')
 
 
