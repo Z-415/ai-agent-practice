@@ -134,8 +134,17 @@ def setup_logger(verbose: bool = False) -> logging.Logger:
 #    是"文件读不到"还是"统计逻辑有 bug"。
 
 def count_words(path: str, top: int = 5) -> dict:
-    # TODO
-    pass
+    try:
+        text = Path(path).read_text(encoding="utf-8")
+    except(OSError,UnicodeDecodeError):
+        return {"total":0, "top":[]}
+    counts = {}
+    words = text.lower().split()
+    for w in words:
+        counts[w] = counts.get(w, 0) + 1
+    ranked = sorted(counts.items(), key = lambda kv: (-kv[1],kv[0]))
+    return {"total":len(words), "top":[[w,c] for w,c in ranked[:top]]}
+
 
 
 # ======================================================================
