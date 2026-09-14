@@ -103,8 +103,13 @@ def build_parser() -> argparse.ArgumentParser:
 #   logger.error("出错了")
 
 def setup_logger(verbose: bool = False) -> logging.Logger:
-    # TODO
-    pass
+    logger = logging.getLogger("app")
+    logger.setLevel(logging.DEBUG if verbose else logging.INFO)
+    logger.handlers.clear()
+    handler = logging.StreamHandler()
+    handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(message)s"))
+    logger.addHandler(handler)
+    return logger
 
 
 # ======================================================================
