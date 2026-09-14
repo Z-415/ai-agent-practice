@@ -224,7 +224,23 @@ def extract_code_block(text: str, lang: str = "json") -> str | None:
 #    读文件那段，想清楚该复用还是该重写。
 
 def analyze_log(path: str) -> dict:
-    # TODO
+    try:
+        with open(path, "r" ,encoding="utf-8") as f:
+            text = f.read()
+        total = 0
+        counts = {}
+        for line in text.splitlines():
+            if not line.strip():
+                continue
+            parts = re.findall(r"\[(\w+)\]",line)
+            if not parts:
+                continue 
+            level = parts[0]
+            total += 1
+            counts[level] = counts.get(level,0)+1
+        return {"total":total, "by_level":counts}
+    except(OSError,UnicodeDecodeError):
+        return {"total": 0, "by_level":{}}# TODO
     pass
 
 
@@ -257,7 +273,15 @@ class Solution:
     #
     # 建议先写第一种 —— 它是通用思路，而且代码短。
     def romanToInt(self, s: str) -> int:
-        # TODO
+        values = {"I": 1,"V": 5,"X":10,"L":50,"C":100,"D":500,"M":1000}
+        total = 0
+        for i in range(len(s)):
+            num = values[s[i]]
+            if i+1 < len(s) and values[s[i]] < values[s[i+1]]:
+                total -= num
+            else:
+                total += num 
+        return total# TODO
         pass
 
     # ------------------------------------------------------------------
