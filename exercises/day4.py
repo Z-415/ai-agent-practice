@@ -238,8 +238,19 @@ class Solution:
     #    第 8 周手写 Agent 时，你要解析模型吐出来的"工具调用"文本，
     #    判断括号/花括号是否闭合是同一类问题。栈也是面试最高频的数据结构。
     def isValid(self, s: str) -> bool:
-        # TODO
-        pass
+        pairs = {"(":")", "{":"}", "[":"]"}
+        stack = []
+        for ch in s:
+            if ch in pairs:
+                stack.append(ch)
+            else:
+                if not stack:
+                    return False
+                top = stack.pop()
+                if pairs[top] != ch:
+                    return False
+        return not stack
+
 
     # ------------------------------------------------------------------
     # 【LC 21】合并两个有序链表             难度：简单
