@@ -239,8 +239,13 @@ class Solution:
     #   题目要求**原地**（in-place），不能新建一个数组再返回。
     #   这是为了考你"不用额外空间"的能力，面试官很看重这个。
     def removeDuplicates(self, nums: list[int]) -> int:
-        # TODO
-        pass
+        slow = 0
+        fast = 1
+        for fast in range(1,len(nums)):
+            if nums[fast] != nums[slow]:
+                slow +=1
+                nums[slow]=nums[fast]
+        return slow + 1
 
     # ------------------------------------------------------------------
     # 【LC 27】移除元素                      难度：简单
