@@ -219,9 +219,15 @@ class Solution:
     #    二分不只是"查数组"。第 8 周调大模型参数（温度、Top-K）时，
     #    你经常要"在有序的东西里找第一个满足条件的"——那是同一个套路。
     def searchInsert(self, nums: list[int], target: int) -> int:
-        # TODO
-        pass
-
+        left = 0
+        right =len(nums)
+        while left <right:
+            mid = (left+right)//2
+            if nums[mid] <target:
+                left = mid +1
+            else:
+                right = mid
+        return left
     # ------------------------------------------------------------------
     # 【LC 53】最大子数组和                  难度：中等
     # https://leetcode.cn/problems/maximum-subarray/
