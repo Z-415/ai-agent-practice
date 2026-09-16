@@ -69,9 +69,10 @@ import time  # noqa: F401
 #   asyncio.run(fetch("a", 0.01))   ->  "ok:a"
 #   （不能像普通函数那样直接 fetch("a")，那样只会得到一个"协程对象"，什么都不会发生）
 
+
 async def fetch(name: str, delay: float = 0.1) -> str:
-    # TODO
-    pass
+    await asyncio.sleep(delay)
+    return f"ok:{name}"
 
 
 # ======================================================================
@@ -101,14 +102,16 @@ async def fetch(name: str, delay: float = 0.1) -> str:
 #   串行 ≈ 0.5 秒     并发 ≈ 0.1 秒
 #   如果并发没比串行快，说明你里面用了 time.sleep，或者忘了 await
 
+
 async def run_serial(names: list[str], delay: float = 0.1) -> list[str]:
-    # TODO
-    pass
+    result = []
+    for n in names:
+        result.append(await fetch(n, delay))
+    return result
 
 
 async def run_concurrent(names: list[str], delay: float = 0.1) -> list[str]:
-    # TODO
-    pass
+    return list(await asyncio.gather(*[fetch(n, delay) for n in names]))
 
 
 # ======================================================================
@@ -152,14 +155,23 @@ async def run_concurrent(names: list[str], delay: float = 0.1) -> list[str]:
 #   因为 asyncio 里有些东西（比如 CancelledError 在旧版本）不属于 Exception。
 #   写 BaseException 更保险。
 
+
 async def fetch_maybe(name: str, fail: bool = False) -> str:
-    # TODO
-    pass
+    if fail:
+        raise RuntimeError(f"{name} 挂了")
+    await asyncio.sleep(0.01)
+    return f"ok:{name}"
 
 
 async def run_all(items: list[tuple[str, bool]]) -> list:
-    # TODO
-    pass
+    result = await asyncio.gather(*[fetch_maybe(n, f) for n, f in items], return_exceptions=True)
+    out = []
+    for r, (name, _) in zip(result, items):
+        if isinstance(r, BaseException):
+            out.append(f"ERROR:{name}")
+        else:
+            out.append(r)
+    return out
 
 
 # ======================================================================
@@ -187,8 +199,8 @@ async def run_all(items: list[tuple[str, bool]]) -> list:
 #    你用的是 3.13，所以直接写 TimeoutError 就行。
 #    但**看老教程时你会看到 asyncio.TimeoutError**，知道是同一个东西就好。
 
-async def fetch_with_timeout(name: str, delay: float,
-                             timeout: float) -> str:
+
+async def fetch_with_timeout(name: str, delay: float, timeout: float) -> str:
     # TODO
     pass
 
@@ -198,6 +210,7 @@ async def fetch_with_timeout(name: str, delay: float,
 # ======================================================================
 # 今天两道都是「原地修改」—— 面试高频，而且考的是「双指针」思想。
 # ======================================================================
+
 
 class Solution:
     # ------------------------------------------------------------------
@@ -295,16 +308,21 @@ def _check():
 
     if t_serial is not None and t_concurrent is not None:
         if t_serial < 0.4:
-            note("练习2：run_serial 只用了 %.2f 秒，5 个任务 × 0.1 秒至少该 0.5 秒 —— "
-                 "你可能没在循环里 await" % t_serial)
+            note(
+                "练习2：run_serial 只用了 %.2f 秒，5 个任务 × 0.1 秒至少该 0.5 秒 —— "
+                "你可能没在循环里 await" % t_serial
+            )
         if t_concurrent > t_serial / 2:
-            note("练习2：并发用了 %.2f 秒，串行用了 %.2f 秒 —— **没有变快**。"
-                 "八成是你用了 `time.sleep` 而不是 `await asyncio.sleep`，"
-                 "或者忘了 await。协程函数不加 await 是不会执行的。"
-                 % (t_concurrent, t_serial))
+            note(
+                "练习2：并发用了 %.2f 秒，串行用了 %.2f 秒 —— **没有变快**。"
+                "八成是你用了 `time.sleep` 而不是 `await asyncio.sleep`，"
+                "或者忘了 await。协程函数不加 await 是不会执行的。" % (t_concurrent, t_serial)
+            )
         else:
-            print("      [练习2 计时] 串行 %.2fs  →  并发 %.2fs，快了 %.1f 倍"
-                  % (t_serial, t_concurrent, t_serial / max(t_concurrent, 1e-9)))
+            print(
+                "      [练习2 计时] 串行 %.2fs  →  并发 %.2fs，快了 %.1f 倍"
+                % (t_serial, t_concurrent, t_serial / max(t_concurrent, 1e-9))
+            )
 
     # ---------- 练习 3 ----------
     items = [("a", False), ("b", True), ("c", False)]
@@ -321,8 +339,7 @@ def _check():
     except RuntimeError:
         pass
     except Exception as e:
-        note("练习3：fetch_maybe('x', True) 应该抛 RuntimeError，你却抛了 %s"
-             % type(e).__name__)
+        note("练习3：fetch_maybe('x', True) 应该抛 RuntimeError，你却抛了 %s" % type(e).__name__)
 
     try:
         got = asyncio.run(run_all(items))
@@ -330,22 +347,24 @@ def _check():
         if list(got) != want3:
             note("练习3：run_all(%r) 应该返回 %r，你返回 %r" % (items, want3, got))
     except Exception as e:
-        note("练习3（run_all）：**整体抛异常了** -> %s: %s —— 说明没写 "
-             "return_exceptions=True，一个失败就把全部结果丢了"
-             % (type(e).__name__, e))
+        note(
+            "练习3（run_all）：**整体抛异常了** -> %s: %s —— 说明没写 "
+            "return_exceptions=True，一个失败就把全部结果丢了" % (type(e).__name__, e)
+        )
 
     # ---------- 练习 4 ----------
     try:
         got = asyncio.run(fetch_with_timeout("a", 0.5, 0.05))
         if got != "TIMEOUT:a":
-            note("练习4：0.5 秒的任务给了 0.05 秒超时，应该返回 'TIMEOUT:a'，"
-                 "你返回 %r" % (got,))
+            note("练习4：0.5 秒的任务给了 0.05 秒超时，应该返回 'TIMEOUT:a'，你返回 %r" % (got,))
         got = asyncio.run(fetch_with_timeout("a", 0.01, 1))
         if got != "ok:a":
             note("练习4：没超时时应该返回 fetch 的结果 'ok:a'，你返回 %r" % (got,))
     except Exception as e:
-        note("练习4：报错 -> %s: %s —— 超时时不要抛异常，要**返回** "
-             "'TIMEOUT:<名字>'" % (type(e).__name__, e))
+        note(
+            "练习4：报错 -> %s: %s —— 超时时不要抛异常，要**返回** "
+            "'TIMEOUT:<名字>'" % (type(e).__name__, e)
+        )
 
     return errors
 
@@ -358,45 +377,54 @@ def _check_algo():
     sol = Solution()
 
     # ---------- LC 26 ----------
-    lc26 = [([1, 1, 2], 2, [1, 2]),
-            ([0, 0, 1, 1, 1, 2, 2, 3, 3, 4], 5, [0, 1, 2, 3, 4]),
-            ([1], 1, [1]),
-            ([1, 1], 1, [1]),
-            ([-3, -1, 0, 0, 0, 0, 0, 2], 4, [-3, -1, 0, 2])]
+    lc26 = [
+        ([1, 1, 2], 2, [1, 2]),
+        ([0, 0, 1, 1, 1, 2, 2, 3, 3, 4], 5, [0, 1, 2, 3, 4]),
+        ([1], 1, [1]),
+        ([1, 1], 1, [1]),
+        ([-3, -1, 0, 0, 0, 0, 0, 2], 4, [-3, -1, 0, 2]),
+    ]
     for nums, want_k, want_arr in lc26:
         try:
             k = sol.removeDuplicates(nums)
         except Exception as e:
-            errors.append("LC26：removeDuplicates(%r) 报错 -> %s: %s"
-                          % (want_arr, type(e).__name__, e))
+            errors.append(
+                "LC26：removeDuplicates(%r) 报错 -> %s: %s" % (want_arr, type(e).__name__, e)
+            )
             break
         if k != want_k:
-            errors.append("LC26：输入 %r 应该返回长度 %d，你返回 %r"
-                          % (want_arr, want_k, k))
+            errors.append("LC26：输入 %r 应该返回长度 %d，你返回 %r" % (want_arr, want_k, k))
         elif list(nums[:k]) != want_arr:
-            errors.append("LC26：输入 %r 的前 %d 个元素应该是 %r，实际是 %r"
-                          % (want_arr, want_k, want_arr, nums[:k] if k else []))
+            errors.append(
+                "LC26：输入 %r 的前 %d 个元素应该是 %r，实际是 %r"
+                % (want_arr, want_k, want_arr, nums[:k] if k else [])
+            )
 
     # ---------- LC 27 ----------
-    lc27 = [([3, 2, 2, 3], 3, 2, [2, 2]),
-            ([0, 1, 2, 2, 3, 0, 4, 2], 2, 5, [0, 1, 3, 0, 4]),
-            ([1], 1, 0, []),
-            ([4, 5], 4, 1, [5]),
-            ([], 0, 0, [])]
+    lc27 = [
+        ([3, 2, 2, 3], 3, 2, [2, 2]),
+        ([0, 1, 2, 2, 3, 0, 4, 2], 2, 5, [0, 1, 3, 0, 4]),
+        ([1], 1, 0, []),
+        ([4, 5], 4, 1, [5]),
+        ([], 0, 0, []),
+    ]
     for nums, val, want_k, want_set in lc27:
         try:
             k = sol.removeElement(nums, val)
         except Exception as e:
-            errors.append("LC27：removeElement(%r, %r) 报错 -> %s: %s"
-                          % (want_set, val, type(e).__name__, e))
+            errors.append(
+                "LC27：removeElement(%r, %r) 报错 -> %s: %s" % (want_set, val, type(e).__name__, e)
+            )
             break
         if k != want_k:
-            errors.append("LC27：输入 %r 移除 %r 后应该返回长度 %d，你返回 %r"
-                          % (want_set, val, want_k, k))
+            errors.append(
+                "LC27：输入 %r 移除 %r 后应该返回长度 %d，你返回 %r" % (want_set, val, want_k, k)
+            )
         elif sorted(nums[:k]) != sorted(want_set):
-            errors.append("LC27：输入 %r 移除 %r 后前 %d 个元素应该是 %r（顺序不限），"
-                          "实际是 %r" % (want_set, val, want_k, want_set,
-                                        nums[:k] if k else []))
+            errors.append(
+                "LC27：输入 %r 移除 %r 后前 %d 个元素应该是 %r（顺序不限），"
+                "实际是 %r" % (want_set, val, want_k, want_set, nums[:k] if k else [])
+            )
 
     return errors
 
@@ -436,15 +464,16 @@ def _run_all():
         print("=" * 62)
         print("")
         print("去力扣官网提交这两道：")
-        print("  LC 26 删除有序数组中的重复项 "
-              "https://leetcode.cn/problems/remove-duplicates-from-sorted-array/")
-        print("  LC 27 移除元素               "
-              "https://leetcode.cn/problems/remove-element/")
+        print(
+            "  LC 26 删除有序数组中的重复项 "
+            "https://leetcode.cn/problems/remove-duplicates-from-sorted-array/"
+        )
+        print("  LC 27 移除元素               https://leetcode.cn/problems/remove-element/")
         print("")
         print("然后提交代码：")
-        print('  git add .')
+        print("  git add .")
         print('  git commit -m "day5: 异步/并发/超时 + LC26/LC27"')
-        print('  git push')
+        print("  git push")
 
 
 if __name__ == "__main__":
