@@ -239,6 +239,8 @@ class Solution:
     #   题目要求**原地**（in-place），不能新建一个数组再返回。
     #   这是为了考你"不用额外空间"的能力，面试官很看重这个。
     def removeDuplicates(self, nums: list[int]) -> int:
+        if not nums:
+            return 0
         slow = 0
         for fast in range(1, len(nums)):
             if nums[fast] != nums[slow]:
@@ -388,6 +390,7 @@ def _check_algo():
 
     # ---------- LC 26 ----------
     lc26 = [
+        ([], 0, []),                      # 回归测试：空数组必须返回 0
         ([1, 1, 2], 2, [1, 2]),
         ([0, 0, 1, 1, 1, 2, 2, 3, 3, 4], 5, [0, 1, 2, 3, 4]),
         ([1], 1, [1]),
