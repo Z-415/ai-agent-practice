@@ -90,9 +90,12 @@ async def call_api(name: str, attempt: int) -> str:
 
 async def run_limited(names: list[str], limit: int = 2,
                       delay: float = 0.1) -> list[str]:
-    # TODO
-    pass
-
+    sem = asyncio.Semaphore(limit)
+    async def one(n):
+        async with sem:
+            await asyncio.sleep(delay)
+            return f"ok:{n}"
+    return list(await asyncio.gather(*[one(n) for n in names]))
 
 # ======================================================================
 # 练习 2：重试 + 指数退避
@@ -124,8 +127,13 @@ async def run_limited(names: list[str], limit: int = 2,
 
 async def call_with_retry(name: str, max_tries: int = 3,
                           base_delay: float = 0.01) -> str:
-    # TODO
-    pass
+    for attempt in range(1,max_tries+1):
+        try:
+            return await call_api(name, attempt)
+        except RuntimeError:
+            if attempt == max_tries:
+                raise
+            await asyncio.sleep(base_delay*2**(attempt-1))
 
 
 # ======================================================================

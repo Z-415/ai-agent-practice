@@ -4,7 +4,7 @@
 
 ## 目录
 
-- `exercises/day1.py` ~ `day5.py` —— 每日练习（工程题 + 力扣题，跑一次判分）
+- `exercises/day1.py` ~ `day6.py` —— 每日练习（工程题 + 力扣题，跑一次判分）
 
 ## 怎么跑
 
@@ -15,7 +15,7 @@ python -m venv .venv
 .venv\Scripts\activate        # Windows
 pip install -r requirements.txt
 
-python exercises/day5.py      # 跑自测，看还有几题没过
+python exercises/day6.py      # 跑自测，看还有几题没过
 ```
 
 ## 技术栈
@@ -24,4 +24,4 @@ Python 3.13 · 标准库（`json` / `datetime` / `pathlib` / `re` / `argparse` /
 
 ## 学习进度
 
-见 [笔记库](笔记/)（本地）。打卡表：60 个学习日，已完成 4 天。
+60 个学习日，已完成 5 天。（笔记库在我的本地 Obsidian 里，不在此仓库）
