@@ -258,9 +258,11 @@ class Solution:
     #    "前面那段要不要留"这个判断，就是 Agent 里"这段记忆/这轮对话要不要带进上下文"
     #    的最简化模型。第 8 周给 Agent 加记忆时你会再遇到它。
     def maxSubArray(self, nums: list[int]) -> int:
-        # TODO
-        pass
-
+        cur = best = nums[0]
+        for x in nums[1:]:
+            cur = max(x,cur+x)
+            best = max(cur,best)
+        return best
 
 # ======================================================================
 # 自测区：不要修改下面的代码
