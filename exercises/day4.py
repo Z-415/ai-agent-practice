@@ -61,11 +61,12 @@ from pathlib import Path  # noqa: F401
 #   build_parser().parse_args(["--input", "a.txt", "-k", "3", "-v"])
 #   -> Namespace(input='a.txt', top=3, verbose=True)
 
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="词频统计工具")
-    parser.add_argument("-i","--input", required=True, help="输入文件路径")
-    parser.add_argument("-k", "--top", type = int, default= 5, help="取前几个(默认5)")
-    parser.add_argument("-v","--verbose", action = "store_true", help="输出详细日志")
+    parser.add_argument("-i", "--input", required=True, help="输入文件路径")
+    parser.add_argument("-k", "--top", type=int, default=5, help="取前几个(默认5)")
+    parser.add_argument("-v", "--verbose", action="store_true", help="输出详细日志")
     return parser
 
 
@@ -102,6 +103,7 @@ def build_parser() -> argparse.ArgumentParser:
 #   logger.info("正常信息")
 #   logger.error("出错了")
 
+
 def setup_logger(verbose: bool = False) -> logging.Logger:
     logger = logging.getLogger("app")
     logger.setLevel(logging.DEBUG if verbose else logging.INFO)
@@ -133,18 +135,18 @@ def setup_logger(verbose: bool = False) -> logging.Logger:
 #    统计和排序的代码不要塞进 try 里 —— 否则出错了你会分不清
 #    是"文件读不到"还是"统计逻辑有 bug"。
 
+
 def count_words(path: str, top: int = 5) -> dict:
     try:
         text = Path(path).read_text(encoding="utf-8")
-    except(OSError,UnicodeDecodeError):
-        return {"total":0, "top":[]}
+    except (OSError, UnicodeDecodeError):
+        return {"total": 0, "top": []}
     counts = {}
     words = text.lower().split()
     for w in words:
         counts[w] = counts.get(w, 0) + 1
-    ranked = sorted(counts.items(), key = lambda kv: (-kv[1],kv[0]))
-    return {"total":len(words), "top":[[w,c] for w,c in ranked[:top]]}
-
+    ranked = sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))
+    return {"total": len(words), "top": [[w, c] for w, c in ranked[:top]]}
 
 
 # ======================================================================
@@ -181,24 +183,27 @@ def count_words(path: str, top: int = 5) -> dict:
 #   main(["-i", 存在的文件])   -> 0
 #   main(["-i", "不存在.txt"]) -> 1
 
+
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
     logger = setup_logger(args.verbose)
-    logger.debug("解析到的参数：%s",args)
-    report = count_words(args.input,args.top)
+    logger.debug("解析到的参数：%s", args)
+    report = count_words(args.input, args.top)
     if report["total"] == 0:
-        logger.error("读不到文件或文件是空的：%s",args.input)
+        logger.error("读不到文件或文件是空的：%s", args.input)
         return 1
     for word, count in report["top"]:
         print(f"{word}\t{count}")
     return 0
+
 
 # ======================================================================
 # 今日算法（LeetCode）
 # ======================================================================
 # 流程：在这里写 → 跑本地自测 → 去力扣官网提交 → 官网通过才算完
 # ======================================================================
+
 
 class ListNode:
     """力扣的链表节点定义（官网会给，这里给你方便本地测试）"""
@@ -238,7 +243,7 @@ class Solution:
     #    第 8 周手写 Agent 时，你要解析模型吐出来的"工具调用"文本，
     #    判断括号/花括号是否闭合是同一类问题。栈也是面试最高频的数据结构。
     def isValid(self, s: str) -> bool:
-        pairs = {"(":")", "{":"}", "[":"]"}
+        pairs = {"(": ")", "{": "}", "[": "]"}
         stack = []
         for ch in s:
             if ch in pairs:
@@ -250,7 +255,6 @@ class Solution:
                 if pairs[top] != ch:
                     return False
         return not stack
-
 
     # ------------------------------------------------------------------
     # 【LC 21】合并两个有序链表             难度：简单
@@ -276,10 +280,19 @@ class Solution:
     # 💡 为什么用 dummy：
     #    不用 dummy 的话，第一节点要单独处理（它是空的、不知道指向谁），
     #    代码里会多出一堆 if。dummy 让"插入第一个节点"和"插入后面的节点"变成同一套逻辑。
-    def mergeTwoLists(self, list1: ListNode | None,
-                      list2: ListNode | None) -> ListNode | None:
-        # TODO
-        pass
+    def mergeTwoLists(self, list1: ListNode | None, list2: ListNode | None) -> ListNode | None:
+        dummy = ListNode()
+        cur = dummy
+        while list1 and list2:
+            if list1.val <= list2.val:
+                cur.next = list1
+                list1 = list1.next
+            else:
+                cur.next = list2
+                list2 = list2.next
+            cur = cur.next
+        cur.next = list1 or list2
+        return dummy.next
 
 
 # ======================================================================
@@ -302,16 +315,19 @@ def _check():
         p = build_parser()
         a = p.parse_args(["-i", "a.txt"])
         if a.input != "a.txt" or a.top != 5 or a.verbose is not False:
-            note("练习1：build_parser().parse_args(['-i','a.txt']) 应该是 "
-                 "input='a.txt', top=5, verbose=False，你得到 %r" % (a,))
+            note(
+                "练习1：build_parser().parse_args(['-i','a.txt']) 应该是 "
+                "input='a.txt', top=5, verbose=False，你得到 %r" % (a,)
+            )
         b = p.parse_args(["--input", "a.txt", "-k", "3", "-v"])
         if b.top != 3 or b.verbose is not True:
-            note("练习1：-k 3 -v 之后 top 应该是**整数** 3、verbose 是 True，"
-                 "你得到 top=%r(%s), verbose=%r —— 检查 type=int 写了没"
-                 % (b.top, type(b.top).__name__, b.verbose))
+            note(
+                "练习1：-k 3 -v 之后 top 应该是**整数** 3、verbose 是 True，"
+                "你得到 top=%r(%s), verbose=%r —— 检查 type=int 写了没"
+                % (b.top, type(b.top).__name__, b.verbose)
+            )
         if b.top is not None and not isinstance(b.top, int):
-            note("练习1：top 是 %s，不是 int。argparse 里必须写 type=int"
-                 % type(b.top).__name__)
+            note("练习1：top 是 %s，不是 int。argparse 里必须写 type=int" % type(b.top).__name__)
     except Exception as e:
         note("练习1：报错 -> %s: %s" % (type(e).__name__, e))
 
@@ -321,16 +337,20 @@ def _check():
         if not isinstance(lg, logging.Logger):
             note("练习2：setup_logger 应该返回 logging.Logger，你返回 %r" % (type(lg),))
         elif lg.level != logging.DEBUG:
-            note("练习2：verbose=True 时级别应该是 DEBUG(%d)，你设成 %r"
-                 % (logging.DEBUG, lg.level))
+            note(
+                "练习2：verbose=True 时级别应该是 DEBUG(%d)，你设成 %r" % (logging.DEBUG, lg.level)
+            )
         lg2 = setup_logger(False)
         if lg2.level != logging.INFO:
-            note("练习2：verbose=False 时级别应该是 INFO(%d)，你设成 %r"
-                 % (logging.INFO, lg2.level))
+            note(
+                "练习2：verbose=False 时级别应该是 INFO(%d)，你设成 %r" % (logging.INFO, lg2.level)
+            )
         n_handlers = len(setup_logger(True).handlers)
         if n_handlers != 1:
-            note("练习2：调了 3 次之后 handler 有 %d 个 —— 说明没写 "
-                 "logger.handlers.clear()，日志会打多遍" % n_handlers)
+            note(
+                "练习2：调了 3 次之后 handler 有 %d 个 —— 说明没写 "
+                "logger.handlers.clear()，日志会打多遍" % n_handlers
+            )
     except Exception as e:
         note("练习2：报错 -> %s: %s" % (type(e).__name__, e))
 
@@ -341,14 +361,16 @@ def _check():
             f.write("the cat the dog the bird cat")
         got = count_words(wp, 2)
         want = {"total": 7, "top": [["the", 3], ["cat", 2]]}
-        norm = {"total": (got or {}).get("total"),
-                "top": [list(x) for x in ((got or {}).get("top") or [])]}
+        norm = {
+            "total": (got or {}).get("total"),
+            "top": [list(x) for x in ((got or {}).get("top") or [])],
+        }
         if norm != want:
             note("练习3：count_words(文件, 2) 应该是 %r，你返回 %r" % (want, got))
         got = count_words(os.path.join(tmp, "没有.txt"))
         if got != {"total": 0, "top": []}:
             note("练习3：读不到文件应该返回 {'total': 0, 'top': []}，你返回 %r" % (got,))
-        got = count_words(tmp)          # 传目录
+        got = count_words(tmp)  # 传目录
         if got != {"total": 0, "top": []}:
             note("练习3：传目录进去也要返回 {'total': 0, 'top': []}，你返回 %r" % (got,))
     except Exception as e:
@@ -366,15 +388,15 @@ def _check():
         if "the" not in out:
             note("练习4：成功时应该把词和次数打印出来，你的输出是 %r" % (out[:120],))
 
-        with contextlib.redirect_stdout(io.StringIO()), \
-                contextlib.redirect_stderr(io.StringIO()):
+        with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
             rc_bad = main(["-i", os.path.join(tmp, "没有.txt")])
         if rc_bad != 1:
             note("练习4：main(['-i', 不存在的文件]) 应该返回 1，你返回 %r" % (rc_bad,))
     except SystemExit as e:
-        note("练习4：main() 里不要直接 sys.exit()，要 **return** 退出码"
-             "（你触发了 SystemExit %r）。真正的 sys.exit(main()) 写在文件最底下。"
-             % (e.code,))
+        note(
+            "练习4：main() 里不要直接 sys.exit()，要 **return** 退出码"
+            "（你触发了 SystemExit %r）。真正的 sys.exit(main()) 写在文件最底下。" % (e.code,)
+        )
     except Exception as e:
         note("练习4：报错 -> %s: %s" % (type(e).__name__, e))
 
@@ -408,9 +430,19 @@ def _check_algo():
     sol = Solution()
 
     # ---------- LC 20 ----------
-    lc20 = [("()", True), ("()[]{}", True), ("(]", False), ("([)]", False),
-            ("{[]}", True), ("", True), ("(", False), (")", False),
-            ("((()))", True), ("([{}])", True), ("([]", False)]
+    lc20 = [
+        ("()", True),
+        ("()[]{}", True),
+        ("(]", False),
+        ("([)]", False),
+        ("{[]}", True),
+        ("", True),
+        ("(", False),
+        (")", False),
+        ("((()))", True),
+        ("([{}])", True),
+        ("([]", False),
+    ]
     for s, want in lc20:
         try:
             got = sol.isValid(s)
@@ -424,26 +456,30 @@ def _check_algo():
             errors.append("LC20：isValid(%r) 应该是 %s，你返回 %r" % (s, want, got))
 
     # ---------- LC 21 ----------
-    lc21 = [([1, 2, 4], [1, 3, 4], [1, 1, 2, 3, 4, 4]),
-            ([], [], []),
-            ([], [0], [0]),
-            ([1], [], [1]),
-            ([1, 1], [1], [1, 1, 1]),
-            ([2, 5, 9], [1, 3, 3, 8], [1, 2, 3, 3, 5, 8, 9])]
+    lc21 = [
+        ([1, 2, 4], [1, 3, 4], [1, 1, 2, 3, 4, 4]),
+        ([], [], []),
+        ([], [0], [0]),
+        ([1], [], [1]),
+        ([1, 1], [1], [1, 1, 1]),
+        ([2, 5, 9], [1, 3, 3, 8], [1, 2, 3, 3, 5, 8, 9]),
+    ]
     for a, b, want in lc21:
         try:
             got = sol.mergeTwoLists(_from_list(a), _from_list(b))
         except Exception as e:
-            errors.append("LC21：mergeTwoLists(%r, %r) 报错 -> %s: %s"
-                          % (a, b, type(e).__name__, e))
+            errors.append(
+                "LC21：mergeTwoLists(%r, %r) 报错 -> %s: %s" % (a, b, type(e).__name__, e)
+            )
             break
         if want and got is None:
             errors.append("LC21：mergeTwoLists(%r, %r) 返回 None，还没写吧" % (a, b))
             break
         got_list = _to_list(got)
         if got_list != want:
-            errors.append("LC21：mergeTwoLists(%r, %r) 应该是 %r，你返回 %r"
-                          % (a, b, want, got_list))
+            errors.append(
+                "LC21：mergeTwoLists(%r, %r) 应该是 %r，你返回 %r" % (a, b, want, got_list)
+            )
 
     return errors
 
@@ -487,7 +523,7 @@ def _run_all():
         print("  LC 21 合并两个有序链表 https://leetcode.cn/problems/merge-two-sorted-lists/")
         print("")
         print("然后提交代码（今天你会把它推上 GitHub）：")
-        print('  git add .')
+        print("  git add .")
         print('  git commit -m "day4: argparse/logging/CLI骨架 + LC20/LC21"')
 
 
