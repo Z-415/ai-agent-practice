@@ -201,8 +201,10 @@ async def run_all(items: list[tuple[str, bool]]) -> list:
 
 
 async def fetch_with_timeout(name: str, delay: float, timeout: float) -> str:
-    # TODO
-    pass
+    try:
+        return await asyncio.wait_for(fetch(name, delay), timeout=timeout)
+    except TimeoutError:
+        return f"TIMEOUT:{name}"
 
 
 # ======================================================================
