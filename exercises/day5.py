@@ -240,11 +240,10 @@ class Solution:
     #   这是为了考你"不用额外空间"的能力，面试官很看重这个。
     def removeDuplicates(self, nums: list[int]) -> int:
         slow = 0
-        fast = 1
-        for fast in range(1,len(nums)):
+        for fast in range(1, len(nums)):
             if nums[fast] != nums[slow]:
-                slow +=1
-                nums[slow]=nums[fast]
+                slow += 1
+                nums[slow] = nums[fast]
         return slow + 1
 
     # ------------------------------------------------------------------
@@ -268,8 +267,12 @@ class Solution:
     # 💡 想通这一句你就懂了：
     #   **"删除"的本质不是把元素抹掉，而是"把要留的元素往前挪，然后假装后面的不存在"。**
     def removeElement(self, nums: list[int], val: int) -> int:
-        # TODO
-        pass
+        write = 0
+        for read in range(len(nums)):
+            if nums[read] != val:
+                nums[write] = nums[read]
+                write += 1
+        return write
 
 
 # ======================================================================
