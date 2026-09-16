@@ -174,8 +174,15 @@ async def call_with_retry(name: str, max_tries: int = 3,
 
 async def run_batch(names: list[str], limit: int = 2,
                     max_tries: int = 3) -> list[dict]:
-    # TODO
-    pass
+    sem = asyncio.Semaphore(limit)
+    async def one(n):
+        async with sem:
+            try:
+                r =await call_with_retry(n,max_tries)
+                return {"name":n,"ok":True,"result":r}
+            except RuntimeError:
+                return {"name":n, "ok":False,"result":f"ERROR:{n}"}
+    return list(await asyncio.gather(*[one(n) for n in names]))
 
 
 # ======================================================================
