@@ -122,8 +122,18 @@ SCORES = [
 
 
 def build_db(conn: sqlite3.Connection) -> None:
-    # TODO
-    pass
+    conn.execute("CREATE TABLE classes(id INTEGER PRIMARY KEY, name TEXT NOT NULL)")
+    conn.execute(
+        "CREATE TABLE students(id INTEGER PRIMARY KEY, name TEXT NOT NULL, class_id INTEGER)"
+    )
+    conn.execute(
+        "CREATE TABLE scores(id INTEGER PRIMARY KEY,student_id INTEGER,subject TEXT,score INTEGER)"
+    )
+    conn.execute("INSERT INTO classes(id,name) VALUES(?,?)", (1, "一班"))
+    conn.execute("INSERT INTO classes(id,name) VALUES(?,?)", (2, "二班"))
+    conn.executemany("INSERT INTO students(id,name,class_id) VALUES(?,?,?)", STUDENTS)
+    conn.executemany("INSERT INTO scores(id,student_id,subject,score) VALUES(?,?,?,?)", SCORES)
+    conn.commit()
 
 
 # ======================================================================
