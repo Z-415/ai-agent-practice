@@ -1,7 +1,7 @@
 #最大子数列和
 def maxSubArray(nums: list[int]) -> int:
     cur = best = nums[0]
-    for x in nums:
+    for x in nums[1:]:
         cur = max(x, x +cur)
         best = max(cur, best)
     return best
