@@ -175,8 +175,15 @@ def build_db(conn: sqlite3.Connection) -> None:
 
 
 def top_students(conn: sqlite3.Connection, min_total: int) -> list[tuple]:
-    # TODO
-    pass
+    sql = """
+        SELECT s.name,SUM(sc.score) AS total
+        FROM students s
+        JOIN scores sc ON sc.student_id = s.id
+        GROUP BY s.name
+        HAVING SUM(sc.score)>= ?
+        ORDER BY total DESC
+    """
+    return conn.execute(sql,(min_total,)).fetchall()
 
 
 # ======================================================================
