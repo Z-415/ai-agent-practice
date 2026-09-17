@@ -220,8 +220,15 @@ def top_students(conn: sqlite3.Connection, min_total: int) -> list[tuple]:
 
 
 def class_average(conn: sqlite3.Connection) -> list[tuple]:
-    # TODO
-    pass
+    sql = """
+        SELECT c.name,AVG(sc.score) AS avg_sc
+        FROM classes c
+        JOIN students s ON s.class_id = c.id
+        JOIN scores sc ON sc.student_id =s.id
+        GROUP BY c.name
+        ORDER BY AVG(sc.score)DESC
+    """
+    return conn.execute(sql).fetchall()
 
 
 # ======================================================================
