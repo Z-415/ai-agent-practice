@@ -1,12 +1,12 @@
 #最大子数列和
-def maxSubArray(self, nums: list[int]) -> int:
+def maxSubArray(nums: list[int]) -> int:
     cur = best = nums[0]
-    for x in range(len(nums)):
+    for x in nums:
         cur = max(x, x +cur)
         best = max(cur, best)
     return best
 #左右括号
-def isValid(self, s: str) -> bool:
+def isValid(s: str) -> bool:
     dicts = {"{":"}","(":")","[":"]"}
     stack = []
     for x in s:
@@ -20,7 +20,7 @@ def isValid(self, s: str) -> bool:
                 return False
     return not stack
 #快慢指针
-def removeDuplicates(self, nums: list[int]) -> int:
+def removeDuplicates( nums: list[int]) -> int:
     if not nums:
         return 0
     slow = 0
