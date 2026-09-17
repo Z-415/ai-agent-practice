@@ -49,6 +49,7 @@ import time  # noqa: F401
 #
 # `attempt` 是"第几次尝试"（从 1 开始）—— 你要把它从调用方传进来。
 
+
 async def call_api(name: str, attempt: int) -> str:
     if name.startswith("bad") or attempt <= 2:
         raise RuntimeError(f"{name} 第 {attempt} 次失败")
@@ -88,14 +89,17 @@ async def call_api(name: str, attempt: int) -> str:
 #     limit=8  ->  一批，约 0.1 秒
 #   如果两个耗时差不多，说明你根本没加 sem（或者加了但没用 async with 包住）
 
-async def run_limited(names: list[str], limit: int = 2,
-                      delay: float = 0.1) -> list[str]:
+
+async def run_limited(names: list[str], limit: int = 2, delay: float = 0.1) -> list[str]:
     sem = asyncio.Semaphore(limit)
+
     async def one(n):
         async with sem:
             await asyncio.sleep(delay)
             return f"ok:{n}"
+
     return list(await asyncio.gather(*[one(n) for n in names]))
+
 
 # ======================================================================
 # 练习 2：重试 + 指数退避
@@ -125,15 +129,15 @@ async def run_limited(names: list[str], limit: int = 2,
 #   call_with_retry("a", 2)     -> 抛 RuntimeError（只试 2 次，不够）
 #   call_with_retry("bad_x", 3) -> 抛 RuntimeError（永远失败）
 
-async def call_with_retry(name: str, max_tries: int = 3,
-                          base_delay: float = 0.01) -> str:
-    for attempt in range(1,max_tries+1):
+
+async def call_with_retry(name: str, max_tries: int = 3, base_delay: float = 0.01) -> str:
+    for attempt in range(1, max_tries + 1):
         try:
             return await call_api(name, attempt)
         except RuntimeError:
             if attempt == max_tries:
                 raise
-            await asyncio.sleep(base_delay*2**(attempt-1))
+            await asyncio.sleep(base_delay * 2 ** (attempt - 1))
 
 
 # ======================================================================
@@ -172,22 +176,25 @@ async def call_with_retry(name: str, max_tries: int = 3,
 #     分开写之后，任何一层出问题你都能单独定位、单独改。
 #     第 5-7 周你写真正的 API 调用层时，就是这个结构。
 
-async def run_batch(names: list[str], limit: int = 2,
-                    max_tries: int = 3) -> list[dict]:
+
+async def run_batch(names: list[str], limit: int = 2, max_tries: int = 3) -> list[dict]:
     sem = asyncio.Semaphore(limit)
+
     async def one(n):
         async with sem:
             try:
-                r =await call_with_retry(n,max_tries)
-                return {"name":n,"ok":True,"result":r}
+                r = await call_with_retry(n, max_tries)
+                return {"name": n, "ok": True, "result": r}
             except RuntimeError:
-                return {"name":n, "ok":False,"result":f"ERROR:{n}"}
+                return {"name": n, "ok": False, "result": f"ERROR:{n}"}
+
     return list(await asyncio.gather(*[one(n) for n in names]))
 
 
 # ======================================================================
 # 今日算法（LeetCode）
 # ======================================================================
+
 
 class Solution:
     # ------------------------------------------------------------------
@@ -220,14 +227,15 @@ class Solution:
     #    你经常要"在有序的东西里找第一个满足条件的"——那是同一个套路。
     def searchInsert(self, nums: list[int], target: int) -> int:
         left = 0
-        right =len(nums)
-        while left <right:
-            mid = (left+right)//2
-            if nums[mid] <target:
-                left = mid +1
+        right = len(nums)
+        while left < right:
+            mid = (left + right) // 2
+            if nums[mid] < target:
+                left = mid + 1
             else:
                 right = mid
         return left
+
     # ------------------------------------------------------------------
     # 【LC 53】最大子数组和                  难度：中等
     # https://leetcode.cn/problems/maximum-subarray/
@@ -260,9 +268,10 @@ class Solution:
     def maxSubArray(self, nums: list[int]) -> int:
         cur = best = nums[0]
         for x in nums[1:]:
-            cur = max(x,cur+x)
-            best = max(cur,best)
+            cur = max(x, cur + x)
+            best = max(cur, best)
         return best
+
 
 # ======================================================================
 # 自测区：不要修改下面的代码
@@ -293,21 +302,26 @@ def _check():
         note("练习1（limit=8）：报错 -> %s: %s" % (type(e).__name__, e))
 
     if r_lim2 is not None and list(r_lim2) != want8:
-        note("练习1：run_limited 的结果顺序或内容不对，应该是 %r，你返回 %r"
-             % (want8, r_lim2))
+        note("练习1：run_limited 的结果顺序或内容不对，应该是 %r，你返回 %r" % (want8, r_lim2))
     if r_lim8 is not None and list(r_lim8) != want8:
         note("练习1：run_limited(limit=8) 的结果不对，你返回 %r" % (r_lim8,))
 
     if t_lim2 is not None and t_lim8 is not None:
         if t_lim2 < 0.3:
-            note("练习1：limit=2 跑 8 个任务 × 0.1 秒只用了 %.2f 秒 —— "
-                 "限流没生效（8 个任务分 4 批，至少要 0.4 秒左右）" % t_lim2)
+            note(
+                "练习1：limit=2 跑 8 个任务 × 0.1 秒只用了 %.2f 秒 —— "
+                "限流没生效（8 个任务分 4 批，至少要 0.4 秒左右）" % t_lim2
+            )
         elif t_lim8 > 0.25:
-            note("练习1：limit=8 用了 %.2f 秒 —— 应该一批跑完（约 0.1 秒），"
-                 "检查一下 sem 是不是被所有任务共用了" % t_lim8)
+            note(
+                "练习1：limit=8 用了 %.2f 秒 —— 应该一批跑完（约 0.1 秒），"
+                "检查一下 sem 是不是被所有任务共用了" % t_lim8
+            )
         else:
-            print("      [练习1 计时] limit=2 → %.2fs    limit=8 → %.2fs    "
-                  "差 %.1f 倍" % (t_lim2, t_lim8, t_lim2 / max(t_lim8, 1e-9)))
+            print(
+                "      [练习1 计时] limit=2 → %.2fs    limit=8 → %.2fs    "
+                "差 %.1f 倍" % (t_lim2, t_lim8, t_lim2 / max(t_lim8, 1e-9))
+            )
 
     # ---------- 练习 2：重试 ----------
     try:
@@ -315,23 +329,25 @@ def _check():
         if r != "ok:a":
             note("练习2：call_with_retry('a', 3) 应该返回 'ok:a'，你返回 %r" % (r,))
     except Exception as e:
-        note("练习2：call_with_retry('a', 3) 报错 -> %s: %s —— "
-             "3 次尝试足够成功，不该抛异常" % (type(e).__name__, e))
+        note(
+            "练习2：call_with_retry('a', 3) 报错 -> %s: %s —— "
+            "3 次尝试足够成功，不该抛异常" % (type(e).__name__, e)
+        )
 
     try:
         r = asyncio.run(call_with_retry("a", 2))
-        note("练习2：call_with_retry('a', 2) 应该抛 RuntimeError"
-             "（2 次不够），但它返回了 %r" % (r,))
+        note("练习2：call_with_retry('a', 2) 应该抛 RuntimeError（2 次不够），但它返回了 %r" % (r,))
     except RuntimeError:
         pass
     except Exception as e:
-        note("练习2：call_with_retry('a', 2) 抛了 %s，应该是 RuntimeError"
-             % type(e).__name__)
+        note("练习2：call_with_retry('a', 2) 抛了 %s，应该是 RuntimeError" % type(e).__name__)
 
     try:
         r = asyncio.run(call_with_retry("bad_x", 3))
-        note("练习2：call_with_retry('bad_x', 3) 应该抛 RuntimeError"
-             "（这个名字永远失败），但它返回了 %r" % (r,))
+        note(
+            "练习2：call_with_retry('bad_x', 3) 应该抛 RuntimeError"
+            "（这个名字永远失败），但它返回了 %r" % (r,)
+        )
     except RuntimeError:
         pass
     except Exception as e:
@@ -340,15 +356,18 @@ def _check():
     # ---------- 练习 3：综合 ----------
     try:
         got = asyncio.run(run_batch(["a", "bad_x", "b"], 2, 3))
-        want3 = [{"name": "a", "ok": True, "result": "ok:a"},
-                 {"name": "bad_x", "ok": False, "result": "ERROR:bad_x"},
-                 {"name": "b", "ok": True, "result": "ok:b"}]
+        want3 = [
+            {"name": "a", "ok": True, "result": "ok:a"},
+            {"name": "bad_x", "ok": False, "result": "ERROR:bad_x"},
+            {"name": "b", "ok": True, "result": "ok:b"},
+        ]
         if list(got) != want3:
-            note("练习3：run_batch(['a','bad_x','b'], 2, 3) 应该返回 %r，你返回 %r"
-                 % (want3, got))
+            note("练习3：run_batch(['a','bad_x','b'], 2, 3) 应该返回 %r，你返回 %r" % (want3, got))
     except Exception as e:
-        note("练习3：**整体抛异常了** -> %s: %s —— 重试耗尽的那个应该标记成 "
-             "ok=False，不能让它把整批拖垮" % (type(e).__name__, e))
+        note(
+            "练习3：**整体抛异常了** -> %s: %s —— 重试耗尽的那个应该标记成 "
+            "ok=False，不能让它把整批拖垮" % (type(e).__name__, e)
+        )
 
     return errors
 
@@ -361,41 +380,50 @@ def _check_algo():
     sol = Solution()
 
     # ---------- LC 35 ----------
-    lc35 = [([1, 3, 5, 6], 5, 2), ([1, 3, 5, 6], 2, 1),
-            ([1, 3, 5, 6], 7, 4), ([1, 3, 5, 6], 0, 0),
-            ([1], 0, 0), ([1], 1, 0), ([1], 2, 1),
-            ([], 5, 0), ([1, 2, 3, 4, 5], 3, 2),
-            ([1, 2, 3, 4, 5], 6, 5)]
+    lc35 = [
+        ([1, 3, 5, 6], 5, 2),
+        ([1, 3, 5, 6], 2, 1),
+        ([1, 3, 5, 6], 7, 4),
+        ([1, 3, 5, 6], 0, 0),
+        ([1], 0, 0),
+        ([1], 1, 0),
+        ([1], 2, 1),
+        ([], 5, 0),
+        ([1, 2, 3, 4, 5], 3, 2),
+        ([1, 2, 3, 4, 5], 6, 5),
+    ]
     for nums, target, want in lc35:
         try:
             got = sol.searchInsert(list(nums), target)
         except Exception as e:
-            errors.append("LC35：searchInsert(%r, %r) 报错 -> %s: %s"
-                          % (nums, target, type(e).__name__, e))
+            errors.append(
+                "LC35：searchInsert(%r, %r) 报错 -> %s: %s" % (nums, target, type(e).__name__, e)
+            )
             break
         if got != want:
-            errors.append("LC35：searchInsert(%r, %r) 应该是 %r，你返回 %r"
-                          % (nums, target, want, got))
+            errors.append(
+                "LC35：searchInsert(%r, %r) 应该是 %r，你返回 %r" % (nums, target, want, got)
+            )
 
     # ---------- LC 53 ----------
-    lc53 = [([-2, 1, -3, 4, -1, 2, 1, -5, 4], 6),
-            ([1], 1),
-            ([5, 4, -1, 7, 8], 23),
-            ([-1], -1),
-            ([-2, -1], -1),
-            ([-3, -2, -5], -2),
-            ([1, 2, 3, 4], 10),
-            ([-2, 1], 1)]
+    lc53 = [
+        ([-2, 1, -3, 4, -1, 2, 1, -5, 4], 6),
+        ([1], 1),
+        ([5, 4, -1, 7, 8], 23),
+        ([-1], -1),
+        ([-2, -1], -1),
+        ([-3, -2, -5], -2),
+        ([1, 2, 3, 4], 10),
+        ([-2, 1], 1),
+    ]
     for nums, want in lc53:
         try:
             got = sol.maxSubArray(list(nums))
         except Exception as e:
-            errors.append("LC53：maxSubArray(%r) 报错 -> %s: %s"
-                          % (nums, type(e).__name__, e))
+            errors.append("LC53：maxSubArray(%r) 报错 -> %s: %s" % (nums, type(e).__name__, e))
             break
         if got != want:
-            errors.append("LC53：maxSubArray(%r) 应该是 %r，你返回 %r"
-                          % (nums, want, got))
+            errors.append("LC53：maxSubArray(%r) 应该是 %r，你返回 %r" % (nums, want, got))
 
     return errors
 
@@ -439,9 +467,9 @@ def _run_all():
         print("  LC 53 最大子数组和   https://leetcode.cn/problems/maximum-subarray/")
         print("")
         print("然后提交代码：")
-        print('  git add .')
+        print("  git add .")
         print('  git commit -m "day6: 限流/重试退避/批量调用器 + LC35/LC53"')
-        print('  git push')
+        print("  git push")
 
 
 if __name__ == "__main__":
