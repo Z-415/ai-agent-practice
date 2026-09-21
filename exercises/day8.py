@@ -183,7 +183,7 @@ def top_students(conn: sqlite3.Connection, min_total: int) -> list[tuple]:
         HAVING SUM(sc.score)>= ?
         ORDER BY total DESC
     """
-    return conn.execute(sql,(min_total,)).fetchall()
+    return conn.execute(sql, (min_total,)).fetchall()
 
 
 # ======================================================================
@@ -285,11 +285,11 @@ def class_average(conn: sqlite3.Connection) -> list[tuple]:
 
 def search_students(conn: sqlite3.Connection, keyword: str) -> list[tuple]:
     sql = """
-        SELECT name FROM students 
+        SELECT name FROM students
         WHERE name LIKE ?
         ORDER BY name
     """
-    return conn.execute(sql,(f"%{keyword}%",)).fetchall()
+    return conn.execute(sql, (f"%{keyword}%",)).fetchall()
 
 
 # ======================================================================
@@ -324,14 +324,13 @@ class Solution:
     #    第 8 周你做 Agent 时，处理"多轮对话的上下文超长了要往前删"
     #    用的也是"从后往前"的扫描方式。
     def plusOne(self, digits: list[int]) -> list[int]:
-        for num in range(len(digits)-1,-1,-1):
-            if digits[num] <9:
-                digits[num] +=1
+        for num in range(len(digits) - 1, -1, -1):
+            if digits[num] < 9:
+                digits[num] += 1
                 return digits
             elif digits[num] == 9:
                 digits[num] = 0
         return [1] + digits
-
 
     # ------------------------------------------------------------------
     # 【LC 70】爬楼梯                       难度：简单
@@ -372,8 +371,8 @@ class Solution:
         if n <= 2:
             return n
         a, b = 1, 2
-        for i in range(3, n+1):
-            a, b = b, a+b
+        for i in range(3, n + 1):
+            a, b = b, a + b
         return b
 
 
