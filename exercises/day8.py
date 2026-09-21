@@ -369,8 +369,12 @@ class Solution:
     # 💡 这题在训练什么：**"用两三个变量滚动"的 DP 空间优化**。
     #    第 9 周你做 RAG 评测时，算"滑动窗口内的指标"用的是同一招。
     def climbStairs(self, n: int) -> int:
-        # TODO
-        pass
+        if n <= 2:
+            return n
+        a, b = 1, 2
+        for i in range(3, n+1):
+            a, b = b, a+b
+        return b
 
 
 # ======================================================================
